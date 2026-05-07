@@ -108,6 +108,37 @@ button:active{
 @media(max-width:650px){
   .grid{grid-template-columns:1fr}
 }
+  
+  
+  #topBanner{
+  position:fixed;
+  top:20px;
+  right:50%;
+  transform:translateX(50%) translateY(-120px);
+
+  background:linear-gradient(135deg,#22c55e,#16a34a);
+  color:white;
+
+  padding:16px 26px;
+  border-radius:18px;
+
+  font-weight:bold;
+  font-size:17px;
+
+  z-index:9999;
+
+  box-shadow:0 12px 40px rgba(0,0,0,.35);
+
+  transition:.45s;
+}
+
+#topBanner.show{
+  transform:translateX(50%) translateY(0);
+}
+
+#topBanner.error{
+  background:linear-gradient(135deg,#ef4444,#b91c1c);
+}
 </style>
 </head>
 
@@ -173,6 +204,7 @@ button:active{
 
   </form>
 </div>
+  <div id="topBanner"></div>
 
 <script>
 /* ===== Supabase Config ===== */
@@ -189,6 +221,27 @@ function showMsg(text, type){
   msg.textContent = text;
   msg.className = "msg " + type;
   msg.style.display = "block";
+}
+
+function showBanner(text,type="success"){
+
+  const banner = document.getElementById("topBanner");
+
+  banner.textContent = text;
+
+  banner.className = "";
+
+  if(type === "error"){
+    banner.classList.add("error");
+  }
+
+  setTimeout(()=>{
+    banner.classList.add("show");
+  },10);
+
+  setTimeout(()=>{
+    banner.classList.remove("show");
+  },4000);
 }
 
 form.addEventListener("submit", async function(e){
@@ -209,6 +262,7 @@ form.addEventListener("submit", async function(e){
 
   if(!data.full_name || !data.phone || !data.description || !data.complaint_type){
     showMsg("חובה למלא שם, טלפון, סוג פנייה ותיאור.", "error");
+    showBanner("חובה למלא את כל השדות", "error");
     return;
   }
 
@@ -219,12 +273,18 @@ form.addEventListener("submit", async function(e){
   if(error){
     console.error(error);
     showMsg("שגיאה בשליחה. בדוק את ההגדרות של Supabase.", "error");
+    showBanner("שגיאה בשליחה", "error");
     return;
   }
 
   showMsg("הפנייה נשלחה בהצלחה.", "success");
+  showBanner("הפנייה נשלחה בהצלחה");
+
   form.reset();
+
   document.getElementById("subject_name").value = "לתחנת המשטרה";
+
+});
 </script>
 
 </body>
